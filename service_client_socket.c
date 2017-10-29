@@ -14,6 +14,7 @@
 #include <assert.h>
 
 #include "service_client_socket.h"
+#include "httpparse.h"
 
 /* why can I not use const size_t here? */
 #define buffer_size 1024
@@ -27,7 +28,10 @@ service_client_socket (const int s, const char *const tag) {
 
   /* repeatedly read a buffer load of bytes, leaving room for the
      terminating NUL we want to add to make using printf() possible */
-  while ((bytes = read (s, buffer, buffer_size - 1)) > 0) {
+  bytes = read (s, buffer, buffer_size - 1);
+	
+	httpparse (buffer, s);
+	
     /* this code is not quite complete: a write can in this context be
        partial and return 0<x<bytes.  realistically you don't need to
        deal with this case unless you are writing multiple megabytes */
@@ -53,7 +57,7 @@ service_client_socket (const int s, const char *const tag) {
 #else
     printf ("echoed %d bytes back to %s, \"%s\"\n", bytes, tag, buffer);
 #endif
-  }
+  
   /* bytes == 0: orderly close; bytes < 0: something went wrong */
   if (bytes != 0) {
     perror ("read");

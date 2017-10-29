@@ -7,6 +7,7 @@
 
 #include "get_listen_socket.h"
 #include "service_listen_socket.h"
+#include "httpparse.h"
 
 char *myname = "unknown";
 

@@ -20,7 +20,7 @@ endif
 BIN=single_thread_server multi_thread_server client
 
 common_objs=main.o get_listen_socket.o service_client_socket.o \
-	make_printable_address.o
+	make_printable_address.o httpparse.o
 
 single_objs=service_listen_socket.o
 
