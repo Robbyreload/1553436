@@ -3,48 +3,49 @@
 #include <string.h>
 #include <unistd.h>
 #include <fcntl.h>
-
-#define buffer 1024
+#include <sys/types.h> 
+#include <sys/stat.h> 
 
 int httpparse (char *request, int s) {
-
-	/*char *requestCopy = malloc(sizeof(char)* strlen(request));
-	printf("XD\n");
+	
+	char *requestCopy = malloc(sizeof(char)* strlen(request));
 	char *method, *requestURI, *version;
 	int bytes = 1024;
-	int moreBytes;
-	printf("lol\n");
 	requestCopy = strcpy(requestCopy, request);
-	method = strtok (requestCopy, " ");
-	requestURI = strtok (NULL, " ");
-	version = strtok (NULL, "\n");
-	printf("ouch\n");
+	method = strtok (requestCopy, " \n");
+	requestURI = strtok (NULL, " \n");
+	version = strtok (NULL, " \n");
 
 	if (strncmp (version, "HTTP/1.1", 8) != 0) {
-		printf("ouchies\n");
 		write (s, "HTTP/1.1 400 Bad Request\n", 25);
 		return -1;
-		printf("RIP\n");
 	}
-
-	printf("feelsbadman\n");
-
-	if (strcmp (requestURI, "/\n") == 0) {
+	
+	if (strcmp (requestURI, "/") == 0) {
 		requestURI = "/index.html";
+		printf("%s\n", requestURI);
 	}
-	printf("ouchies\n");
 
 	if (strcmp (method, "GET") == 0) {
 		write (s, "HTTP/1.1 200 OK\n", 16);
-		char *str;
 		char bytesArray[bytes];
-		str = ".";
-		str = strcat (str, "/index.html");
-		int file = open(requestURI, O_WRONLY | O_APPEND);
+		char str[100];
+		str[0] = '.';
+		str[1] = '\0';
+		strcat (str, requestURI);
+
+		printf("%s", str);
+		printf("\n");
 		
+		int file = open(str, O_RDWR);
+		read (file, bytesArray, bytes);
+		write (s, bytesArray, 1);
+		
+		/*int moreBytes;
 		while ((moreBytes = read (file, bytesArray, bytes)) > 0) {
 			write (s, bytesArray, 1);
-		}
+		}*/
+		
 		return 0;
 
 	}else if (strcmp (method, "HEAD") == 0) {
@@ -64,7 +65,7 @@ int httpparse (char *request, int s) {
 	}else {
 		write (s, "HTTP/1.1 400 Bad Request\n", 16);
 		return -1;
-	}*/
+	}
 	return -1;
 }
 

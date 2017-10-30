@@ -25,32 +25,31 @@ service_client_socket (const int s, const char *const tag) {
   size_t bytes;
 
   printf ("new connection from %s\n", tag);
-
   /* repeatedly read a buffer load of bytes, leaving room for the
      terminating NUL we want to add to make using printf() possible */
   bytes = read (s, buffer, buffer_size - 1);
 	
-	httpparse (buffer, s);
+  httpparse (buffer, s);
 	
-    /* this code is not quite complete: a write can in this context be
-       partial and return 0<x<bytes.  realistically you don't need to
-       deal with this case unless you are writing multiple megabytes */
-    if (write (s, buffer, bytes) != bytes) {
-      perror ("write");
-      return -1;
+  /* this code is not quite complete: a write can in this context be
+  partial and return 0<x<bytes.  realistically you don't need to
+  deal with this case unless you are writing multiple megabytes */
+  if (write (s, buffer, bytes) != bytes) {
+	perror ("write");
+    return -1;
+  }
+  /* NUL-terminal the string */
+  buffer[bytes] = '\0';
+  /* special case for tidy printing: if the last two characters are
+  \r\n or the last character is \n, zap them so that the newline
+  following the quotes is the only one. */
+  if (bytes >= 1 && buffer[bytes - 1] == '\n') {
+	if (bytes >= 2 && buffer[bytes - 2] == '\r') {
+		strcpy (buffer + bytes - 2, "..");
+    } else {
+		strcpy (buffer + bytes - 1, ".");
     }
-    /* NUL-terminal the string */
-    buffer[bytes] = '\0';
-    /* special case for tidy printing: if the last two characters are
-       \r\n or the last character is \n, zap them so that the newline
-       following the quotes is the only one. */
-    if (bytes >= 1 && buffer[bytes - 1] == '\n') {
-      if (bytes >= 2 && buffer[bytes - 2] == '\r') {
-	strcpy (buffer + bytes - 2, "..");
-      } else {
-	strcpy (buffer + bytes - 1, ".");
-      }
-    }
+  }
     
 #if (__SIZE_WIDTH__ == 64 || __SIZEOF_POINTER__ == 8)
     printf ("echoed %ld bytes back to %s, \"%s\"\n", bytes, tag, buffer);
