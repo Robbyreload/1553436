@@ -39,7 +39,7 @@ int httpparse (char *request, int s) {
 		
 		int file = open(str, O_RDWR);
 		read (file, bytesArray, bytes);
-		write (s, bytesArray, 1);
+		write (s, bytesArray, strlen(bytesArray));
 		
 		/*int moreBytes;
 		while ((moreBytes = read (file, bytesArray, bytes)) > 0) {
